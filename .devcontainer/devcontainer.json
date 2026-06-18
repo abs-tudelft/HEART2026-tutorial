@@ -1,0 +1,39 @@
+{
+  "name": "Tydi-Tools development container",
+  // Use VNC-enabled image for easy access to GUI apps
+  "image": "hdltypetech/tydi-tools:vnc-latest",
+
+  // Mounting the workspace directory to /root/workspace in the container
+  "workspaceMount": "source=${localWorkspaceFolder},target=/root/workspace,type=bind",
+  "workspaceFolder": "/root/workspace",
+
+  // Important: forward port 6080 for noVNC to your host machine
+  "forwardPorts": [6080],
+
+  // Give ports a recognizable name in VS Code
+  "portsAttributes": {
+    "6080": {
+      "label": "Tydi-tools noVNC server",
+      "onAutoForward": "notify"
+    }
+  },
+
+  // Optional: change the desktop resolution to fit your screen size
+  "containerEnv": {
+    "DESKTOP_RESOLUTION": "1920x1080"
+  },
+
+  // Development extensions that are useful for working with Tydi-tools
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "scalameta.metals",         // Scala & Chisel support (Metals)
+        "ms-python.python",         // Python extension
+        "ms-python.vscode-pylance", // Smart code completion for Python
+        "tamasfe.even-better-toml"  // Useful for the Tydi-lang config files
+      ]
+    }
+  },
+
+  "overrideCommand": false
+}
