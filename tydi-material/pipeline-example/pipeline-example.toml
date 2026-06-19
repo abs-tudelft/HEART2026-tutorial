@@ -1,0 +1,10 @@
+output_path = "./output"
+
+[properties]
+name = "Pipeline_Example"
+top_level_implementation = "PipelineExample"
+top_level_implementation_package = "pipeline_example"
+sugaring = ["pipeline_example:PipelineExample"]
+
+[files]
+tydi_src = ["./std.td", "./pipeline-example.td"]

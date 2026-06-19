@@ -80,6 +80,27 @@ impl PipelineExample of NumsToStats_interface {
 }
 ```
 
+You can, from the `tydi-material/pipeline-example` folder, generate the Tydi-lang IR data with
+```sh
+tydi-lang-complier -c pipeline-example.toml
+```
+
+Then, you can generate Chisel code for this Tydi dataflow description with
+
+```sh
+tl2chisel output output/json_IR.json
+```
+
+This will generate three Chisel files in the `output` folder. The `main` file contains the definition of the top level component and all data types and interfaces (streamlet definitions in Tydi-lang jargon). The `components` file contains bare, stream routing only, implementations as defined in the Tydi-lang description. This is done in a separate file, so they can be swapped out with _real_ implementations easily from another file, without hazard of important code being overwritten. Finally, there is the `generation_sub`, which contains an `App` class that can be run to generate output Verilog code. 
+
+Finally you can generate Verilog output with
+
+```sh
+scala-cli output/json_IR_generation_stub.scala output/json_IR_main.scala
+```
+
+The folder also contains handwritten versions in Chisel to show what an optimised code that uses library utilities looks like. There is a single-lane and multi-lane version.
+
 ### **Tydi type**
 
 The Tydi type that corresponds to the number stream is as follows:

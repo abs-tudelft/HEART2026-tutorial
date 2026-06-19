@@ -1,4 +1,5 @@
-#### package pack0;
+package pipeline_example;
+
 UInt_64_t = Bit(64); // UInt<64>
 SInt_64_t = Bit(64); // SInt<64>
 
@@ -17,19 +18,16 @@ Group Stats {
 NumberGroup_stream = Stream(NumberGroup, t=1.0, d=1, c=1);
 Stats_stream = Stream(Stats, t=1.0, d=1, c=1);
 
-#### package pack1;
-use pack0;
-
 streamlet NumsFilter_interface {
-    std_out : pack0.NumberGroup_stream out;
-    std_in : pack0.NumberGroup_stream in;
+    std_out : NumberGroup_stream out;
+    std_in : NumberGroup_stream in;
 }
 
 impl NonNegativeFilter of NumsFilter_interface {}
 
 streamlet NumsToStats_interface {
-    std_out : pack0.Stats_stream out;
-    std_in : pack0.NumberGroup_stream in;
+    std_out : Stats_stream out;
+    std_in : NumberGroup_stream in;
 }
 
 impl Reducer of NumsToStats_interface {}

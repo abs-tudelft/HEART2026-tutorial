@@ -3,7 +3,7 @@
 .metals
 .scala-build
 .bsp
-./output
+output
 test_run_dir
 *.vcd
 *.fir
