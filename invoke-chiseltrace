@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+# Check if at least two arguments are provided
+if [ "$#" -lt 2 ]; then
+    echo "Usage: $0 <TOP_MODULE> <SLICE_CRITERION> [--log] [extra_arguments...]"
+    exit 1
+fi
+
+TOP_MODULE="$1"
+SLICE_CRITERION="$2"
+shift 2
+
+# Check if --log is in the remaining arguments
+DETACH=true
+EXTRA_ARGS=()
+
+for arg in "$@"; do
+    if [ "$arg" == "--log" ]; then
+        DETACH=false
+    else
+        EXTRA_ARGS+=("$arg")
+    fi
+done
+
+# Find the most recently modified directory
+SIM_BASE_DIR="./test_run_dir/${TOP_MODULE}/ChiselTraceDebugger"
+SIM_DIR=$(ls -td "${SIM_BASE_DIR}"/*/ 2>/dev/null | head -n 1)
+
+if [ -z "$SIM_DIR" ]; then
+    SIM_DIR_NAME="defaultSimulation"
+else
+    SIM_DIR_NAME=$(basename "$SIM_DIR")
+fi
+
+# Define the full command array to avoid code duplication
+CMD=(
+    chiseltrace
+    --slice-criterion "$SLICE_CRITERION"
+    --pdg-path ./pdg.json
+    --vcd-path "./test_run_dir/${TOP_MODULE}/ChiselTraceDebugger/${SIM_DIR_NAME}/trace.vcd"
+    --hgldd-path ./test_run_dir/tmpModule/ChiselTraceDebugger/hgldd/debug
+    --top-module "$TOP_MODULE"
+    --extra-scopes TOP svsimTestbench dut
+    "${EXTRA_ARGS[@]}"
+)
+
+# Run detached or attached based on the flag
+if [ "$DETACH" = true ]; then
+    echo "Starting chiseltrace..."
+    "${CMD[@]}" >/dev/null 2>&1 &
+    disown
+else
+    echo "Starting chiseltrace in foreground (logging enabled)..."
+    "${CMD[@]}"
+fi

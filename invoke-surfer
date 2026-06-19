@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+# Check if at least the top module argument is provided
+if [ "$#" -lt 1 ]; then
+    echo "Usage: $0 <TOP_MODULE> [--log] [extra_arguments...]"
+    exit 1
+fi
+
+TOP_MODULE="$1"
+shift 1
+
+# Check if --log is in the remaining arguments
+DETACH=true
+EXTRA_ARGS=()
+
+for arg in "$@"; do
+    if [ "$arg" == "--log" ]; then
+        DETACH=false
+    else
+        EXTRA_ARGS+=("$arg")
+    fi
+done
+
+# Find the most recently modified directory
+SIM_BASE_DIR="./test_run_dir/${TOP_MODULE}/ChiselTraceDebugger"
+SIM_DIR=$(ls -td "${SIM_BASE_DIR}"/*/ 2>/dev/null | head -n 1)
+
+if [ -z "$SIM_DIR" ]; then
+    SIM_DIR_NAME="runs_GCD_correctly_launch_tywaves" # Falling back to your example path if empty
+else
+    SIM_DIR_NAME=$(basename "$SIM_DIR")
+fi
+
+# Define the full command array
+CMD=(
+    surfer-tywaves
+    "./test_run_dir/${TOP_MODULE}/ChiselTraceDebugger/${SIM_DIR_NAME}/trace.vcd"
+    --hgldd-dir test_run_dir/tmpModule/ChiselTraceDebugger/hgldd/debug
+    --extra-scopes TOP svsimTestbench dut
+    --top-module "$TOP_MODULE"
+    "${EXTRA_ARGS[@]}"
+)
+
+# Run detached or attached based on the flag
+if [ "$DETACH" = true ]; then
+    echo "Starting surfer-tywaves in the background..."
+    "${CMD[@]}" >/dev/null 2>&1 &
+    disown
+else
+    echo "Starting surfer-tywaves in foreground (logging enabled)..."
+    "${CMD[@]}"
+fi
