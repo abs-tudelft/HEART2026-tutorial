@@ -26,3 +26,21 @@ Here are some resources you can check out to get more information about Tydi, Ty
     _Note: not actively maintained anymore_
     - [TIL](https://github.com/matthijsr/til-vhdl) – The Tydi Intermediate Representation to VHDL compiler  
     _Note: not actively maintained anymore_
+
+## Tywaves & ChiselTrace example circuits
+
+The `sample-circuits` folder contains example circuits taken from the examples folder of the [Tywaves-Chisel](https://github.com/jarlb/tywaves-chisel) repository. You can run the examples with `scala-cli` like so:
+
+```sh
+scala-cli test sample-circuits/circuit_name.scala
+```
+
+> [!TIP]
+> You can safely ignore any errors about unused imports and warnings/hints about packages that can be updated.
+
+Three different simulator classes are used:
+- The built-in Chisel `ParametricSimulator`, will simulate the circuit and save a `vcd` file without launching Surfer or using the type metadata.
+- Tywaves' `TywavesSimulator`, will, after simulation, launch Surfer with tywaves enabled.
+- The `ChiselTraceDebugger`. When a signal's value does not match the one specified in the `expect()` call, the simulation process will prompt you whether you want to start a dependency trace from that signal.
+
+Some circuits will have the one simulator class, and some the other. Feel free to exchange the class.
